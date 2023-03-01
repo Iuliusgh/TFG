@@ -13,7 +13,6 @@ package com.example.aplicaciontfg;
         import android.hardware.camera2.CaptureRequest;
         import android.hardware.camera2.TotalCaptureResult;
         import android.hardware.camera2.params.StreamConfigurationMap;
-        import android.media.ImageReader;
         import android.os.Bundle;
         import android.os.Handler;
         import android.os.HandlerThread;
@@ -46,7 +45,6 @@ public class CameraActivity extends AppCompatActivity {
     protected CameraCaptureSession cameraCaptureSessions;
     protected CaptureRequest.Builder captureRequestBuilder;
     private Size imageDimension;
-    private ImageReader imageReader;
 
     private static final int REQUEST_CAMERA_PERMISSION = 200;
 
