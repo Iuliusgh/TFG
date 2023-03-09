@@ -12,7 +12,14 @@
 -->
 <!-- The content that we show on secondary displays.
      See corresponding Java code PresentationWithMediaRouterActivity.java. -->
-<android.opengl.GLSurfaceView  xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/surface_view"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>

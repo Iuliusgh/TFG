@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final Intent intent = new Intent(this,CameraActivity.class);
+        final Intent intent = new Intent(this,PresentationActivity.class);
         Button botonCamara = (Button) findViewById(R.id.botonCamara);
         botonCamara.setOnClickListener(new View.OnClickListener() {
             @Override

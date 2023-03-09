@@ -11,6 +11,7 @@ import android.media.MediaRouter.RouteInfo;
 import android.opengl.GLSurfaceView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.OrientationEventListener;
 import android.view.SurfaceView;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.CameraX;
 import androidx.camera.core.Preview;
@@ -33,13 +35,15 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.ExecutionException;
 
-public class PresentationActivity extends Activity {
+public class PresentationActivity extends AppCompatActivity {
     private final String TAG = "PresentationWithMediaRouterActivity";
     private MediaRouter mMediaRouter;
     private DemoPresentation mPresentation;
-    private GLSurfaceView mSurfaceView;
     private TextView mInfoTextView;
     private boolean mPaused;
+
+    private PreviewView previewView;
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     /**
      * Initialization of the Activity after it is first created.  Must at least
      * call {@link android.app.Activity#setContentView setContentView()} to
@@ -56,10 +60,37 @@ public class PresentationActivity extends Activity {
         // the content of our screen.
         setContentView(R.layout.presentation_with_media_router_activity);
         // Set up the surface view for visual interest.
-        mSurfaceView = (GLSurfaceView)findViewById(R.id.surface_view);
-        mSurfaceView.setRenderer(new CubeRenderer(false));
+        previewView = findViewById(R.id.previewView);
+        //mSurfaceView.setRenderer(new CubeRenderer(false));
         // Get a text view where we will show information about what's happening.
         mInfoTextView = (TextView)findViewById(R.id.info);
+
+
+        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        cameraProviderFuture.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                    bindImageAnalysis(cameraProvider);
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+    private void bindImageAnalysis( ProcessCameraProvider cameraProvider) {
+        OrientationEventListener orientationEventListener = new OrientationEventListener(this) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+            }
+        };
+        orientationEventListener.enable();
+        Preview preview = new Preview.Builder().build();
+        CameraSelector cameraSelector = new CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
+        preview.setSurfaceProvider(previewView.createSurfaceProvider());
+        cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview);
     }
     @Override
     protected void onResume() {
@@ -92,8 +123,8 @@ public class PresentationActivity extends Activity {
             mPresentation = null;
         }
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    //@Override
+    /*public boolean onCreateOptionsMenu(Menu menu) {
         // Be sure to call the super class.
         super.onCreateOptionsMenu(menu);
         // Inflate the menu and configure the media router action provider.
@@ -104,7 +135,7 @@ public class PresentationActivity extends Activity {
         mediaRouteActionProvider.setRouteTypes(MediaRouter.ROUTE_TYPE_LIVE_VIDEO);
         // Return true to show the menu.
         return true;
-    }
+    }*/
     private void updatePresentation() {
         // Get the current route and its presentation display.
         MediaRouter.RouteInfo route = mMediaRouter.getSelectedRoute(
@@ -140,22 +171,22 @@ public class PresentationActivity extends Activity {
             mInfoTextView.setText(getResources().getString(
                     R.string.presentation_with_media_router_now_playing_remotely,
                     mPresentation.getDisplay().getName()));
-            mSurfaceView.setVisibility(View.INVISIBLE);
-            mSurfaceView.onPause();
+            previewView.setVisibility(View.INVISIBLE);
+            //previewView.onPause();
             if (mPaused) {
-                mPresentation.getSurfaceView().onPause();
+                //mPresentation.getSurfaceView().onPause();
             } else {
-                mPresentation.getSurfaceView().onResume();
+                //mPresentation.getSurfaceView().onResume();
             }
         } else {
             mInfoTextView.setText(getResources().getString(
                     R.string.presentation_with_media_router_now_playing_locally,
                     getWindowManager().getDefaultDisplay().getName()));
-            mSurfaceView.setVisibility(View.VISIBLE);
+            previewView.setVisibility(View.VISIBLE);
             if (mPaused) {
-                mSurfaceView.onPause();
+                //previewView.onPause();
             } else {
-                mSurfaceView.onResume();
+                //previewView.onResume();
             }
         }
     }
@@ -200,7 +231,7 @@ public class PresentationActivity extends Activity {
      * </p>
      */
     private final static class DemoPresentation extends Presentation {
-        private GLSurfaceView mSurfaceView;
+        private PreviewView previewView;
         public DemoPresentation(Context context, Display display) {
             super(context, display);
         }
@@ -214,11 +245,11 @@ public class PresentationActivity extends Activity {
             // Inflate the layout.
             setContentView(R.layout.presentation_with_media_router_content);
             // Set up the surface view for visual interest.
-            mSurfaceView = (GLSurfaceView)findViewById(R.id.surface_view);
-            mSurfaceView.setRenderer(new CubeRenderer(false));
+            previewView = (PreviewView) findViewById(R.id.previewView);
+            //previewView.setRenderer(new CubeRenderer(false));
         }
-        public GLSurfaceView getSurfaceView() {
-            return mSurfaceView;
+        public PreviewView getSurfaceView() {
+            return previewView;
         }
     }
 }

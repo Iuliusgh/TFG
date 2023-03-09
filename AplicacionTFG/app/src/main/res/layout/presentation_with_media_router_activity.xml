@@ -31,9 +31,10 @@
         android:gravity="center_vertical|center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
     <!-- Some content for visual interest in the case where no presentation is showing. -->
-    <android.opengl.GLSurfaceView android:id="@+id/surface_view"
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"/>
+
 
 </LinearLayout>
