@@ -6,11 +6,12 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
-//
+
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    public static CameraConfig cameraConfig = new CameraConfig(50);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,5 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    public CameraConfig getCameraConfig(){
+        return this.cameraConfig;
     }
 }

@@ -3,6 +3,7 @@ package com.example.aplicaciontfg;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -11,8 +12,10 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
+import android.media.ImageReader;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
@@ -27,13 +30,16 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class CameraFragment extends Fragment {
 
     private CameraDevice cameraDevice;
     private Size previewSize;
-
+    private CameraConfig cameraConfig;
     private TextureView textureView;
     private CameraManager cameraManager;
     private CameraCaptureSession cameraCaptureSession;
@@ -63,6 +69,7 @@ public class CameraFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         textureView = view.findViewById(R.id.textureView);
         cameraManager = (CameraManager) requireActivity().getSystemService(Context.CAMERA_SERVICE);
+        cameraConfig = ((MainActivity) getActivity()).getCameraConfig();
         return view;
     }
 
@@ -93,6 +100,7 @@ public class CameraFragment extends Fragment {
             e.printStackTrace();
         }
     }
+    
 
     private void createCameraPreview() {
         try {
